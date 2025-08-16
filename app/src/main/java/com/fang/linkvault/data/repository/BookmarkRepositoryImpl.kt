@@ -4,14 +4,23 @@ import com.fang.linkvault.data.api.BookmarkApiService
 import com.fang.linkvault.domain.model.Bookmark
 import com.fang.linkvault.domain.repository.BookmarkRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import toDomain
 import toDto
+import toEntity
+import javax.inject.Inject
 
-class BookmarkRepositoryImpl(
+class BookmarkRepositoryImpl @Inject constructor(
+    private val bookmarkDao: BookmarkDao,
     private val apiService: BookmarkApiService
 ) : BookmarkRepository{
-    override  fun getBookmark(): Flow<List<Bookmark>> {
-        TODO("Not yet implemented")
+
+
+    override  fun getBookmark(): Flow<List<Bookmark>> {2
+        return bookmarkDao.getAllBookmarks().map{
+            entities->
+            entities.map {it.toDomain()}
+        }
     }
 
     override suspend fun refreshBookmark(
@@ -19,7 +28,14 @@ class BookmarkRepositoryImpl(
         limit: Int
     ): Result<Unit> {
       return try{
-          val bookmakrsFromApi = apiService.getBookmarks(page,limit)
+          // fresh data from the api of type dto
+          val bookmarksFromApi = apiService.getBookmarks(page,limit)
+          // map it to roomdb type entity  if the api call is successful
+          val bookmarkEntities = bookmarksFromApi.map{
+              it.toEntity()
+          }
+          bookmarkDao.clearAll()
+          bookmarkDao.insertAll(bookmarkEntities)
           Result.success(Unit)
       }catch (e: Exception){
           Result.failure(e)
@@ -29,15 +45,25 @@ class BookmarkRepositoryImpl(
     override suspend fun getBookmarksById(id: String): Result<Bookmark> {
         return try{
             val bookmarkDto= apiService.getBookmarkById(id)
+            bookmarkDao.insertAll(listOf(bookmarkDto.toEntity()))
             Result.success(bookmarkDto.toDomain())
         }catch (e:Exception){
-            Result.failure(e)
+            val cachedBookmark= bookmarkDao.getBookmarksById(id)
+            if(cachedBookmark!=null){
+                Result.success(cachedBookmark.toDomain())
+            }
+            else {
+                Result.failure(e)
+            }
         }
     }
 
     override suspend fun createBookmark(bookmark: Bookmark): Result<Bookmark> {
        return  try{
+           // api call to create a bookmark
            val newBookmarkDto = apiService.createBookmark(bookmark.toDto())
+           // insert it into the local db if the api call is successful
+           bookmarkDao.insertAll(listOf(newBookmarkDto .toEntity()))
            Result.success(newBookmarkDto.toDomain())
         }catch (e:Exception){
            Result.failure(e)
@@ -46,8 +72,14 @@ class BookmarkRepositoryImpl(
 
     override suspend fun updateBookmark(id:String,bookmark: Bookmark): Result<Bookmark> {
         return try {
-            val updatedBookmarkDto = apiService.updateBookmark(id, bookmark.toDto())
-            Result.success(updatedBookmarkDto.updatedBookmark.toDomain())
+            // api call to update bookmark on server (UpdateBookmarkResponseDto)
+            val responseWrapper = apiService.updateBookmark(id, bookmark.toDto())
+            // server's response to actual bookmark data (BookmarkDto)
+            val updatedBookmarkDto = responseWrapper.updatedBookmark
+            // save the updated bookmark to local db
+            bookmarkDao.insertAll(listOf(updatedBookmarkDto.toEntity()))
+
+            Result.success(updatedBookmarkDto.toDomain())
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -61,6 +93,9 @@ class BookmarkRepositoryImpl(
     ): Result<Boolean> {
     return try{
 val response = apiService.deleteBookmark(id)
+        if(response.isSuccessful){
+            bookmarkDao.deleteBookmarkById(id)
+        }
         Result.success(response.isSuccessful)
     }catch(e:Exception){
         Result.failure(e)

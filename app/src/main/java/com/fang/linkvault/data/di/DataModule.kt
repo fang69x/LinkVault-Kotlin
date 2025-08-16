@@ -1,10 +1,15 @@
 package com.fang.linkvault.data.di
 
+import android.content.Context
+import androidx.room.Room
 import com.fang.linkvault.data.api.AuthApiService
 import com.fang.linkvault.data.api.BookmarkApiService
+import com.fang.linkvault.data.di.DataModule.BASE_URL
+import com.fang.linkvault.domain.model.Bookmark
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -49,5 +54,20 @@ object DataModule {
         return retrofit.create(BookmarkApiService::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideLinkVaultDatabase(@ApplicationContext context: Context): LinkVaultDatabase {
+        return Room.databaseBuilder(
+            context,
+            LinkVaultDatabase::class.java,
+            "linkvault.db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkDao (database :LinkVaultDatabase): BookmarkDao{
+        return database.bookmarkDao()
+    }
 
 }

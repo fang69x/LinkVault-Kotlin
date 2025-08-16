@@ -5,12 +5,12 @@ import java.util.Date
 
 data class BookmarkDto (
     @SerializedName("_id")
-    val id:String?,
+    val id:String,
     val title:String,
     val url:String,
     val note:String?,
     val category:String,
-    val tags:List<String>,
+    val tags:List<String>?,
     @SerializedName("user")
     val userId:String,
     val createdAt:Date?,

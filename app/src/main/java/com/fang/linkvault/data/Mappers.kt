@@ -12,6 +12,9 @@ fun UserDto.toDomain():User{
         avatarUrl = this.avatar
     )
 }
+
+
+
 fun BookmarkDto.toDomain(): Bookmark{
     return Bookmark(
 id = this.id!!,
@@ -25,11 +28,42 @@ id = this.id!!,
         updatedAt = this.updatedAt
     )
 }
+
+
+
 fun Bookmark.toDto(): BookmarkDto{
     return BookmarkDto(
         id = this.id,
         title = this.title,
         url = this.url,
+        note = this.note,
+        category = this.category,
+        tags = this.tags,
+        userId = this.userId,
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt
+    )
+}
+
+fun BookmarkDto.toEntity():BookmarkEntity{
+    return BookmarkEntity(
+        url = this.url,
+        id = this.id,
+        title = this.title,
+        note = this.note,
+        category = this.category,
+        tags = this.tags,
+        userId = this.userId,
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt
+    )
+}
+
+fun BookmarkEntity.toDomain():Bookmark{
+    return Bookmark(
+        url = this.url,
+        id = this.id,
+        title = this.title,
         note = this.note,
         category = this.category,
         tags = this.tags,

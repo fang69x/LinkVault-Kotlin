@@ -15,6 +15,7 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val apiService: AuthApiService
 ) : AuthRepository{
+
     override suspend fun login(email:String,password:String) : Result<User>{
         return try{
             val request = LoginRequestDto(email,password)

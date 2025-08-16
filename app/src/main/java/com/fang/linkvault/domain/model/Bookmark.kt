@@ -8,7 +8,7 @@ data class Bookmark (
     val url :String,
     val note:String?,
     val category:String,
-    val tags:List<String>,
+    val tags:List<String>?,
     val userId:String,
     val createdAt: Date?,
     val updatedAt:Date?
