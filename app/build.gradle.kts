@@ -48,7 +48,9 @@ android {
 
     packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
 }
-
+kapt {
+    correctErrorTypes = true
+}
 dependencies {
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
@@ -68,6 +70,7 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.51")
+    implementation(libs.androidx.lifecycle.runtime.compose)
     kapt("com.google.dagger:hilt-compiler:2.51")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 

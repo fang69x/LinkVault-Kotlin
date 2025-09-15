@@ -1,6 +1,7 @@
 package com.fang.linkvault.data.repository
 
 import com.fang.linkvault.data.api.BookmarkApiService
+import com.fang.linkvault.data.local.BookmarkDao
 import com.fang.linkvault.domain.model.Bookmark
 import com.fang.linkvault.domain.repository.BookmarkRepository
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ class BookmarkRepositoryImpl @Inject constructor(
 ) : BookmarkRepository{
 
 
-    override  fun getBookmark(): Flow<List<Bookmark>> {2
+    override  fun getBookmark(): Flow<List<Bookmark>> {
         return bookmarkDao.getAllBookmarks().map{
             entities->
             entities.map {it.toDomain()}

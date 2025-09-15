@@ -1,11 +1,17 @@
 package com.fang.linkvault.data.di
 
+import com.fang.linkvault.data.di.LinkVaultDatabase
 import android.content.Context
 import androidx.room.Room
 import com.fang.linkvault.data.api.AuthApiService
 import com.fang.linkvault.data.api.BookmarkApiService
 import com.fang.linkvault.data.di.DataModule.BASE_URL
+import com.fang.linkvault.data.local.BookmarkDao
+import com.fang.linkvault.data.repository.AuthRepositoryImpl
+import com.fang.linkvault.data.repository.BookmarkRepositoryImpl
 import com.fang.linkvault.domain.model.Bookmark
+import com.fang.linkvault.domain.repository.AuthRepository
+import com.fang.linkvault.domain.repository.BookmarkRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -68,6 +74,16 @@ object DataModule {
     @Singleton
     fun provideBookmarkDao (database :LinkVaultDatabase): BookmarkDao{
         return database.bookmarkDao()
+    }
+    @Provides
+    @Singleton
+    fun provideAuthRepository(apiService: AuthApiService): AuthRepository{
+        return AuthRepositoryImpl(apiService)
+    }
+    @Provides
+    @Singleton
+    fun provideBookmarkRepository(apiService: BookmarkApiService, bookmarkDao: BookmarkDao): BookmarkRepository{
+        return BookmarkRepositoryImpl(bookmarkDao,apiService)
     }
 
 }

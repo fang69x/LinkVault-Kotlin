@@ -1,5 +1,8 @@
+
+
 import com.fang.linkvault.data.dto.auth.UserDto
 import com.fang.linkvault.data.dto.bookmark.BookmarkDto
+import com.fang.linkvault.data.local.BookmarkEntity
 import com.fang.linkvault.domain.model.Bookmark
 import com.fang.linkvault.domain.model.User
 
@@ -45,7 +48,7 @@ fun Bookmark.toDto(): BookmarkDto{
     )
 }
 
-fun BookmarkDto.toEntity():BookmarkEntity{
+fun BookmarkDto.toEntity(): BookmarkEntity{
     return BookmarkEntity(
         url = this.url,
         id = this.id,

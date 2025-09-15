@@ -1,3 +1,4 @@
+package com.fang.linkvault.data.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
