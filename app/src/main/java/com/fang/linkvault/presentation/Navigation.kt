@@ -5,6 +5,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.fang.linkvault.presentation.ui.EditBookmark.EditBookmarkScreen
+import com.fang.linkvault.presentation.ui.EditBookmark.EditBookmarkState
 import com.yourusername.linkvault.presentation.ui.home.HomeScreen
 
 @Composable
@@ -16,11 +18,20 @@ fun Navigation(){
     ) {
         composable(route = "home_screen") {
             HomeScreen(
-                onNavigateToCreateBookmark = {},
+                onNavigateToCreateBookmark = {
+                    navController.navigate("create_bookmark_screen")
+                },
                 onNavigateToBookmarkDetail = {},
                 viewModel = hiltViewModel()
             )
 
+        }
+        composable("create_bookmark_screen"){
+            EditBookmarkScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
 

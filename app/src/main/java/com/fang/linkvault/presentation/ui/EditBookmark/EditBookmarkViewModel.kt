@@ -1,4 +1,4 @@
-package com.fang.linkvault.presentation.ui
+package com.fang.linkvault.presentation.ui.EditBookmark
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,12 +12,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class EditBookmarkState(
-    val title:String=""
-    val url:String=""
-    val category:String=""
-    val note:String?=null
-    val isLoading :Boolean=false
-    val isBookmarkSaved: Boolean=false
+    val title:String="",
+    val url:String="",
+    val category:String="",
+    val note:String?=null,
+    val isLoading :Boolean=false,
+    val isBookmarkSaved: Boolean=false,
     val error :String?=null
 )
 @HiltViewModel
@@ -29,7 +29,7 @@ class EditBookmarkViewModel @Inject constructor(
     fun onTitleChanged(newTitle:String){
         _state.update{it.copy(title=newTitle)}
     }
-    fun urlChanged(newUrl:String){
+    fun onUrlChanged(newUrl:String){
         _state.update{it.copy(url=newUrl)}
     }
     fun onCategoryChanged(newCategory: String){
@@ -42,7 +42,7 @@ class EditBookmarkViewModel @Inject constructor(
         viewModelScope.launch{
             _state.update { it.copy(isLoading = true) }
             val bookmarkToSave= Bookmark(
-                id=null,
+                id="",
                 title=_state.value.title,
                 url = _state.value.url,
                 category=_state.value.category,
@@ -59,5 +59,3 @@ class EditBookmarkViewModel @Inject constructor(
 
         }
     }
-
-}
