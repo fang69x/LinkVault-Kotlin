@@ -17,7 +17,7 @@ fun Navigation(){
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = "splash_screen"
+        startDestination = "auth_screen"
     ) {
         composable("splash_screen"){
             SplashScreen(
