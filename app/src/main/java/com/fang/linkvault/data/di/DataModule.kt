@@ -40,9 +40,21 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        sharedPreferences: SharedPreferences
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .addInterceptor { chain ->
+                val requestBuilder = chain.request().newBuilder()
+                val token = sharedPreferences.getString("auth_token", null)
+                if (!token.isNullOrEmpty()) {
+                    requestBuilder.addHeader("Authorization", "Bearer $token")
+                }
+                requestBuilder.addHeader("Content-Type", "application/json")
+                chain.proceed(requestBuilder.build())
+            }
             .build()
     }
 
@@ -86,8 +98,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(apiService: AuthApiService): AuthRepository {
-        return AuthRepositoryImpl(apiService)
+    fun provideAuthRepository(apiService: AuthApiService, @ApplicationContext context: Context): AuthRepository {
+        return AuthRepositoryImpl(apiService, context)
     }
 
     @Provides
@@ -105,23 +117,5 @@ object DataModule {
         return context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     }
 
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor,
-        sharedPreferences: SharedPreferences
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor { chain ->
-                val requestBuilder = chain.request().newBuilder()
-                val token = sharedPreferences.getString("auth_token", null)
-                if (!token.isNullOrEmpty()) {
-                    requestBuilder.addHeader("Authorization", "Bearer $token")
-                }
-                requestBuilder.addHeader("Content-Type", "application/json")
-                chain.proceed(requestBuilder.build())
-            }
-            .build()
-    }
+
 }
