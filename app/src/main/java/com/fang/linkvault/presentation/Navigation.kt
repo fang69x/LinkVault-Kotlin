@@ -30,8 +30,11 @@ fun Navigation(){
 
             )
         }
+
         composable("auth_screen"){
             AuthScreen(
+                onNavigateToHome = {},
+                viewModel = hiltViewModel()
 
             )
         }
