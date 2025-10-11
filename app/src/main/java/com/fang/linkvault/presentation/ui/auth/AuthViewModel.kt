@@ -1,5 +1,6 @@
 package com.fang.linkvault.presentation.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fang.linkvault.domain.repository.AuthRepository
@@ -21,8 +22,15 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel(){
 private val _state= MutableStateFlow(AuthState())
     val state= _state.asStateFlow()
+
     private val _eventChannel = Channel<AuthUiEvent>()
     val events= _eventChannel.receiveAsFlow()
+
+    fun onNameChanged(name:String){
+        _state.update {
+            it.copy(name=name, error = null)
+        }
+    }
     fun onEmailChanged(email:String)
     {
         _state.update{it.copy(email=email,error=null)}
@@ -30,14 +38,21 @@ private val _state= MutableStateFlow(AuthState())
     fun onPasswordChanged(passsword:String){
         _state.update { it.copy(password = passsword, error = null) }
     }
+
     fun onLoginClicked( ){
         viewModelScope.launch {
             _state.update { it.copy(isLoadiing = true) }
             loginUserUseCase(state.value.email,state.value.password)
                 .onSuccess {
+                    Log.d("onLoginClicked","is in onSuccess call")
+
                     _eventChannel.send(AuthUiEvent.NavigateToHome)
+                    Log.d("onLoginClicked","event channel has the message to navigate")
+
                 }
                 .onFailure { error->
+                    Log.d("onLoginClicked","is in onError call")
+
                     _state.update { it.copy(isLoadiing = false, error = error.message) }
 
                 }

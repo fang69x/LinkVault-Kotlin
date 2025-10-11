@@ -33,7 +33,9 @@ fun Navigation(){
 
         composable("auth_screen"){
             AuthScreen(
-                onNavigateToHome = {},
+                onNavigateToHome = {
+                    navController.navigate("home_screen")
+                },
                 viewModel = hiltViewModel()
 
             )

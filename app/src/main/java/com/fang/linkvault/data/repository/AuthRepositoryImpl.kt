@@ -1,6 +1,7 @@
 package com.fang.linkvault.data.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.UiContext
 import androidx.annotation.experimental.Experimental
 import com.fang.linkvault.data.api.AuthApiService
@@ -33,7 +34,10 @@ class AuthRepositoryImpl @Inject constructor(
         return try{
             val request = LoginRequestDto(email,password)
             val response =  apiService.login(request)
+            Log.d("AuthRepository","Login successful , saving token")
             TokenStorage.saveToken(context,response.token)
+            Log.d("AuthRepository","Token saved returning success")
+
             return Result.success(response.user.toDomain())
 
         }catch (e: Exception){
@@ -48,13 +52,18 @@ class AuthRepositoryImpl @Inject constructor(
         avatarUrl:String?
     ): Result<RegisterResponseDto> {
         return try{
-            val namePart= name.toRequestBody("text/plain".toMediaType())
-            val emailPart= email.toRequestBody("text/plain".toMediaType())
-            val passwordPart= password.toRequestBody("text/plain".toMediaType())
+            val namePart= MultipartBody.Part.createFormData("name",name)
+            val emailPart= MultipartBody.Part.createFormData("email",email)
+            val passwordPart= MultipartBody.Part.createFormData("password",password)
+
             val avatarPart= avatarUrl?.takeIf { it.isNotEmpty() }?.let { path->
                 val file= File(path)
-                val requestFile= file.asRequestBody("image/*".toMediaType())
-                MultipartBody.Part.createFormData("avatar", file.name,requestFile)
+                if(file.exists()){
+                    val requestFile = file.asRequestBody("image/*".toMediaType())
+                    MultipartBody.Part.createFormData("avatar", file.name, requestFile)
+                }else{
+                    null
+                }
             }
             val response=apiService.register(namePart,emailPart,passwordPart,avatarPart)
             TokenStorage.saveToken(context, response.token)

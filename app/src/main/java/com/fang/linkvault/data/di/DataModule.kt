@@ -30,7 +30,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-    private const val BASE_URL = "https://linkvault-bti4.onrender.com"
+    private const val BASE_URL = "http://localhost:3000/"
+//    private const val BASE_URL = "https://linkvault-bti4.onrender.com"
 
     @Provides
     @Singleton

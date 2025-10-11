@@ -21,14 +21,17 @@ import retrofit2.http.Part
 interface AuthApiService {
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequestDto): LoginResponseDto
+
     @Multipart
     @POST("api/auth/register")
     suspend fun register(
-        @Part("name") name: RequestBody,
-        @Part("email") email: RequestBody,
-        @Part("password") password: RequestBody,
+        @Part name: MultipartBody.Part,
+        @Part email: MultipartBody.Part,
+        @Part password: MultipartBody.Part,
         @Part avatar: MultipartBody.Part? = null
     ): RegisterResponseDto
+
+
     @GET("api/auth/me")
     suspend fun checkAuthStatus():UserDto
     @POST()

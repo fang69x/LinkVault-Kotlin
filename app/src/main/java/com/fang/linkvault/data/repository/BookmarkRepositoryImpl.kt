@@ -90,7 +90,6 @@ class BookmarkRepositoryImpl @Inject constructor(
 
     override suspend fun deleteBookmark(
         id: String,
-
     ): Result<Boolean> {
     return try{
 val response = apiService.deleteBookmark(id)
