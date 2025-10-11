@@ -28,8 +28,6 @@ class HomeViewModel @Inject constructor(
     private val _eventChannel = Channel<HomeUiEvent>()
     val events = _eventChannel.receiveAsFlow()
 
-
-
     init {
         observeBookmarks()
         refreshBookmarks()
@@ -43,47 +41,50 @@ class HomeViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun refreshBookmarks(){
-        viewModelScope.launch{
-            _state.update { it.copy(isLoading = true) }
-            val result = refreshBookmarksUseCase(page=1, limit=10)
+    fun refreshBookmarks() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
 
-            result.onFailure{error->
-                _state.update{
-                    it.copy(error = error.message)
-                }
-                _state.update{
-                    it.copy(isLoading = false)
+            val result = refreshBookmarksUseCase(page = 1, limit = 10)
+
+            result.onSuccess {
+                // Successfully refreshed bookmarks
+                _state.update { it.copy(isLoading = false, error = null) }
+            }.onFailure { error ->
+                // Failed to refresh bookmarks
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = error.message
+                    )
                 }
             }
         }
     }
 
-    fun deleteBookmark(id:String){
-        viewModelScope.launch{
+    fun deleteBookmark(id: String) {
+        viewModelScope.launch {
             deleteBookmarkUseCase(id)
-                .onSuccess{
+                .onSuccess {
                     _eventChannel.send(HomeUiEvent.ShowSnackbar("Bookmark deleted"))
-        }
-                .onFailure{ error->
+                }
+                .onFailure { error ->
                     _state.update {
                         it.copy(error = error.message)
                     }
-
                 }
         }
     }
 
-    fun onBookmarkClick(id:String){
-        viewModelScope.launch{
+    fun onBookmarkClick(id: String) {
+        viewModelScope.launch {
             _eventChannel.send(HomeUiEvent.NavigateToBookmarkDetail(id))
         }
     }
 
-    fun onAddNewBookmarkClick(){
-        viewModelScope.launch{
+    fun onAddNewBookmarkClick() {
+        viewModelScope.launch {
             _eventChannel.send(HomeUiEvent.NavigateToCreateBookmark)
         }
     }
-
 }

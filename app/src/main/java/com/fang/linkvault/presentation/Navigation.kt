@@ -8,9 +8,9 @@ import androidx.navigation.compose.rememberNavController
 import com.fang.linkvault.presentation.ui.EditBookmark.EditBookmarkScreen
 import com.fang.linkvault.presentation.ui.EditBookmark.EditBookmarkState
 import com.fang.linkvault.presentation.ui.auth.AuthScreen
+import com.fang.linkvault.presentation.ui.home.HomeScreen
 import com.fang.linkvault.presentation.ui.splash.SplashScreen
 import com.fang.linkvault.presentation.ui.splash.SplashViewModel
-import com.yourusername.linkvault.presentation.ui.home.HomeScreen
 
 @Composable
 fun Navigation(){
@@ -46,6 +46,7 @@ fun Navigation(){
                     navController.navigate("create_bookmark_screen")
                 },
                 onNavigateToBookmarkDetail = {},
+                onLogOut={navController.navigate("auth_screen")},
                 viewModel = hiltViewModel()
             )
 
