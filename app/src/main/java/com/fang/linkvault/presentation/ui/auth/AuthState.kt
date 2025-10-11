@@ -4,6 +4,6 @@ data class AuthState (
     val name:String ="",
     val email:String="",
     val password:String="",
-    val isLoadiing:Boolean=false,
+    val isLoading:Boolean=false,
     val error :String?=null
 )

@@ -7,6 +7,8 @@ import androidx.annotation.experimental.Experimental
 import com.fang.linkvault.data.api.AuthApiService
 import com.fang.linkvault.data.api.BookmarkApiService
 import com.fang.linkvault.data.api.TokenStorage
+import com.fang.linkvault.data.dto.ApiError
+import com.fang.linkvault.data.dto.ApiErrorParser
 import com.fang.linkvault.data.dto.auth.LoginRequestDto
 import com.fang.linkvault.data.dto.auth.LoginResponseDto
 import com.fang.linkvault.data.dto.auth.RegisterRequestDto
@@ -30,20 +32,29 @@ class AuthRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : AuthRepository{
 
-    override suspend fun login(email:String,password:String) : Result<User>{
-        return try{
-            val request = LoginRequestDto(email,password)
-            val response =  apiService.login(request)
-            Log.d("AuthRepository","Login successful , saving token")
-            TokenStorage.saveToken(context,response.token)
-            Log.d("AuthRepository","Token saved returning success")
+    override suspend fun login(email: String, password: String): Result<User> {
+        return try {
+            val request = LoginRequestDto(email, password)
+            val response = apiService.login(request)
 
-            return Result.success(response.user.toDomain())
-
-        }catch (e: Exception){
+            if (response.isSuccessful) {
+                val body = response.body()!!
+                Log.d("AuthRepository", "Server response: $body")
+                TokenStorage.saveToken(context, body.token)
+                Log.d("AuthRepository", "Token saved, returning success")
+                Result.success(body.user.toDomain())
+            } else {
+                val errorBody = response.errorBody()?.string()
+                val errorMessage= ApiErrorParser.parseError(errorBody)
+                Log.e("AuthRepository", "Server error: $errorBody")
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Exception during login", e)
             Result.failure(e)
         }
     }
+
 
     override suspend fun register(
         name: String,
@@ -66,9 +77,18 @@ class AuthRepositoryImpl @Inject constructor(
                 }
             }
             val response=apiService.register(namePart,emailPart,passwordPart,avatarPart)
-            TokenStorage.saveToken(context, response.token)
-            return Result.success(response)
-        }catch (e:kotlin.Exception){
+            if(response.isSuccessful){
+                val body = response.body()!!
+                TokenStorage.saveToken(context, body.token)
+                return Result.success(body)
+            }else {
+                val errorBody = response.errorBody()?.string()
+                val errorMessage= ApiErrorParser.parseError(errorBody)
+                Log.e("AuthRepository", "Register failed: $errorBody")
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Exception during register", e)
             Result.failure(e)
         }
     }

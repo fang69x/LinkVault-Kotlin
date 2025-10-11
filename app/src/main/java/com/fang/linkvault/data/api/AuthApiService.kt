@@ -20,7 +20,7 @@ import retrofit2.http.Part
 
 interface AuthApiService {
     @POST("api/auth/login")
-    suspend fun login(@Body request: LoginRequestDto): LoginResponseDto
+    suspend fun login(@Body request: LoginRequestDto): Response<LoginResponseDto>
 
     @Multipart
     @POST("api/auth/register")
@@ -29,7 +29,7 @@ interface AuthApiService {
         @Part email: MultipartBody.Part,
         @Part password: MultipartBody.Part,
         @Part avatar: MultipartBody.Part? = null
-    ): RegisterResponseDto
+    ): Response<RegisterResponseDto>
 
 
     @GET("api/auth/me")

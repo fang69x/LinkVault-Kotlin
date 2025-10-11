@@ -41,11 +41,11 @@ private val _state= MutableStateFlow(AuthState())
 
     fun onLoginClicked( ){
         viewModelScope.launch {
-            _state.update { it.copy(isLoadiing = true) }
+            _state.update { it.copy(isLoading = true) }
             loginUserUseCase(state.value.email,state.value.password)
                 .onSuccess {
                     Log.d("onLoginClicked","is in onSuccess call")
-
+_state.update { it.copy(isLoading = false) }
                     _eventChannel.send(AuthUiEvent.NavigateToHome)
                     Log.d("onLoginClicked","event channel has the message to navigate")
 
@@ -53,7 +53,7 @@ private val _state= MutableStateFlow(AuthState())
                 .onFailure { error->
                     Log.d("onLoginClicked","is in onError call")
 
-                    _state.update { it.copy(isLoadiing = false, error = error.message) }
+                    _state.update { it.copy(isLoading = false, error = error.message) }
 
                 }
         }
@@ -61,15 +61,14 @@ private val _state= MutableStateFlow(AuthState())
 
     fun onRegisterClicked(){
         viewModelScope.launch {
-            _state.update { it.copy(isLoadiing = true) }
+            _state.update { it.copy(isLoading = true) }
             registerUserUseCase("New User", state.value.email,state.value.password)
                 .onSuccess {
                     onLoginClicked()
                 }
                 .onFailure { error->
-                    _state.update { it.copy(isLoadiing = false, error = error.message) }
+                    _state.update { it.copy(isLoading = false, error = error.message) }
                 }
         }
     }
-
 }
