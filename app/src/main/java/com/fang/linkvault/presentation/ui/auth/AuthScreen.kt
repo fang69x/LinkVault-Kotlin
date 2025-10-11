@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -47,11 +48,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -108,17 +112,26 @@ fun AuthScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Logo and Title
                 Image(
                     painter = painterResource(R.drawable.logo),
                     contentDescription = "App logo",
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier
+                        .size(120.dp)
+                        .shadow(
+                            elevation = 10.dp,
+                            shape = CircleShape,
+                            clip = false,
+                            ambientColor = Color.Cyan,
+                            spotColor = Color.Cyan
+                        )
+                        .clip(CircleShape)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(19.dp))
 
                 Text(
                     text = "LinkVault",
+                    fontFamily = FontFamily.Monospace,
                     style = MaterialTheme.typography.headlineLarge.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 32.sp
@@ -264,9 +277,10 @@ fun LoginContent(
         Text(
             text = "Welcome Back!",
             style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamily.Monospace
             ),
-            color = Color(0xFF2C5364)
+            color = Color.White
         )
 
         Text(
@@ -351,7 +365,7 @@ fun LoginContent(
         ) {
             Text(
                 text = "Forgot Password?",
-                color = Color(0xFF2C5364)
+                color = Color(0xFF35718C)
             )
         }
 
@@ -398,7 +412,8 @@ fun LoginContent(
                     Text(
                         text = "Create Account",
                         style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Normal,
+                                    fontFamily = FontFamily.Monospace
                         ),
                         color = Color.White
                     )
